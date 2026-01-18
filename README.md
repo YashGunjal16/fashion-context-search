@@ -83,6 +83,7 @@ Final Ranked Results + Explanations
 
 ## 🗂️ Project Structure
 
+```text
 fashion-context-search/
 │
 ├── backend/
@@ -106,7 +107,7 @@ fashion-context-search/
 ├── requirements.txt
 └── README.md
 
-
+```
 ---
 
 ## 🔽 Model Weights & Dataset (Not Included)
