@@ -22,18 +22,18 @@ This repository contains **both indexing and retrieval pipelines**, built with a
 
 ## 🎯 Key Contributions
 
-✅ Goes **beyond vanilla CLIP retrieval**  
-✅ Handles **multi-attribute & compositional queries**  
-✅ Explicit **upper / lower clothing color separation**  
-✅ Scene-aware retrieval (runway, park, office, street)  
-✅ Modular, scalable design (1K → 1M images)  
-✅ Zero-shot capable (no dataset-specific training required)
+✅ **Goes beyond vanilla CLIP retrieval**  
+✅ **Handles multi-attribute & compositional queries**  
+✅ **Explicit upper / lower clothing color separation**  
+✅ **Scene-aware retrieval** (runway, park, office, street)  
+✅ **Modular, scalable design** (1K → 1M images)  
+✅ **Zero-shot capable** (no dataset-specific training required)
 
 ---
 
 ## 🧠 Core Idea
 
-> **CLIP is great at global similarity, but weak at fine-grained compositional reasoning.**  
+> **"CLIP is great at global similarity, but weak at fine-grained compositional reasoning."**  
 >  
 > This system fixes that by combining:
 >
@@ -47,37 +47,36 @@ This repository contains **both indexing and retrieval pipelines**, built with a
 
 ## 🏗️ System Architecture
 
-User Query
-↓
-LLM / Rule-based Query Parser
-↓
-Structured Query
-(clothing, colors, regions, scene, vibe)
-↓
-CLIP Semantic Retrieval (FAISS)
-↓
-Top-K Candidates
-↓
-Region-aware Reranker
-├─ Upper garment color match
-├─ Lower garment color match
-├─ Scene consistency
-└─ Style alignment
-↓
-Final Ranked Results + Explanations
-
+**User Query**  
+↓  
+**LLM / Rule-based Query Parser**  
+↓  
+**Structured Query**  
+*(clothing, colors, regions, scene, vibe)*  
+↓  
+**CLIP Semantic Retrieval (FAISS)**  
+↓  
+**Top-K Candidates**  
+↓  
+**Region-aware Reranker**  
+├─ Upper garment color match  
+├─ Lower garment color match  
+├─ Scene consistency  
+└─ Style alignment  
+↓  
+**Final Ranked Results + Explanations**
 
 ---
 
 ## 🧩 Why This Is Better Than Vanilla CLIP
 
 | Problem | Vanilla CLIP | This System |
-|------|-------------|-------------|
-| “Blue shirt + black pants” | ❌ Confused | ✅ Correct |
-| Upper vs lower garments | ❌ Not modeled | ✅ Explicit |
-| Scene understanding | ❌ Weak | ✅ Places365 |
-| Compositional queries | ❌ Poor | ✅ Region-aware |
-| Explainability | ❌ None | ✅ Text explanations |
+| :--- | :--- | :--- |
+| **“Blue shirt + black pants”** | ❌ Confused | ✅ Correct |
+| **Upper vs lower garments** | ❌ Not modeled | ✅ Explicit |
+| **Scene understanding** | ❌ Weak | ✅ Places365 |
+| **Compositional queries** | ❌ Poor | ✅ Region-aware |
+| **Explainability** | ❌ None | ✅ Text explanations |
 
 ---
 
@@ -87,27 +86,27 @@ Final Ranked Results + Explanations
 fashion-context-search/
 │
 ├── backend/
-│ ├── api/ # FastAPI server
-│ ├── indexer/ # Image indexing pipeline
-│ ├── retrieval/ # Query-time retrieval logic
-│ ├── models/ # CLIP, Places365 loaders
-│ ├── parsing/ # SCHP human parsing
-│ └── vector_store/ # FAISS wrapper
+│   ├── api/             # FastAPI server
+│   ├── indexer/         # Image indexing pipeline
+│   ├── retrieval/       # Query-time retrieval logic
+│   ├── models/          # CLIP, Places365 loaders
+│   ├── parsing/         # SCHP human parsing
+│   └── vector_store/    # FAISS wrapper
 │
 ├── frontend/
-│ └── app.py # Streamlit UI
+│   └── app.py           # Streamlit UI
 │
 ├── external/
-│ └── schp/ # Self-Correction Human Parsing (external)
+│   └── schp/            # Self-Correction Human Parsing (external)
 │
 ├── data/
-│ ├── raw/ # Images (not committed)
-│ └── processed/ # FAISS index (generated)
+│   ├── raw/             # Images (not committed)
+│   └── processed/       # FAISS index (generated)
 │
 ├── requirements.txt
 └── README.md
-
 ```
+
 ---
 
 ## 🔽 Model Weights & Dataset (Not Included)
@@ -117,13 +116,11 @@ Due to GitHub size limits and licensing constraints, **image datasets and pretra
 ### Required Downloads
 
 | Component | Source | Where to Place |
-|--------|------|--------------|
-| CLIP | Hugging Face | Auto-downloaded |
-| SCHP Checkpoint | Official SCHP repo | `external/schp/checkpoints/` |
-| Places365 | MIT Places | `backend/models/weights/` |
-| Images (500–1000) | Fashionpedia / Custom | `data/raw/` |
-
-This keeps the repository **lightweight, reproducible, and compliant**.
+| :--- | :--- | :--- |
+| **CLIP** | Hugging Face | Auto-downloaded |
+| **SCHP Checkpoint** | Official SCHP repo | `external/schp/checkpoints/` |
+| **Places365** | MIT Places | `backend/models/weights/` |
+| **Images (500–1000)** | Fashionpedia / Custom | `data/raw/` |
 
 ---
 
@@ -132,7 +129,6 @@ This keeps the repository **lightweight, reproducible, and compliant**.
 ### What Happens During Indexing
 
 For each image:
-
 1. **CLIP image embedding** (global semantics)
 2. **Human parsing (SCHP)** → pixel-wise clothing regions
 3. **Upper / lower garment masks**
@@ -143,25 +139,25 @@ For each image:
 
 ### Run Indexing
 
-```text
+```bash
 python -m backend.indexer.build_index \
   --image_dir data/raw \
   --output_dir data/processed/faiss_index \
   --batch_size 8
-
 ```
-##🔎 Retrieval Pipeline (Part B)
-1️⃣ Query Understanding
 
+---
+
+## 🔎 Retrieval Pipeline (Part B)
+
+### 1️⃣ Query Understanding
 The system uses a hybrid query parsing approach to convert free-form natural language queries into structured, machine-readable representations.
 
-Primary: LLM-based query parsing using Google Gemini
+- **Primary:** LLM-based query parsing using Google Gemini  
+- **Fallback:** Rule-based NLP extraction for robustness  
 
-Fallback: Rule-based NLP extraction for robustness
-
-This step extracts explicit fashion and context attributes, enabling fine-grained compositional reasoning.
-
-Example Structured Output
+**Example Structured Output:**
+```json
 {
   "upper_item": "shirt",
   "upper_colors": ["blue"],
@@ -170,168 +166,103 @@ Example Structured Output
   "environment": "park",
   "confidence": 0.91
 }
+```
 
-
-This structured representation is critical for handling multi-attribute queries, which standard CLIP-based retrieval struggles with.
-
-2️⃣ Retrieval Steps
-
+### 2️⃣ Retrieval Steps
 Once the query is structured, retrieval proceeds as follows:
+1. **Encode** the query using the CLIP text encoder.
+2. **Perform Top-K semantic retrieval** using FAISS.
+3. **Apply region-aware reranking** based on:
+    - Upper garment color match
+    - Lower garment color match
+    - Scene alignment (indoor / outdoor / location)
+4. **Generate final ranked results** with textual explanations.
 
-Encode the query using the CLIP text encoder
+---
 
-Perform Top-K semantic retrieval using FAISS
+## 🧪 Example Query
 
-Apply region-aware reranking based on:
+**Query:**  
+*“A blue shirt with black pants sitting in a park”*
 
-Upper garment color match
+**System Reasoning:**  
+- **Upper garment** → Shirt → Blue  
+- **Lower garment** → Pants → Black  
+- **Environment** → Park  
 
-Lower garment color match
+**Result:**  
+Images containing **blue upper clothing**, **black lower clothing**, and **outdoor / park-like scenes** are ranked highest.
 
-Scene alignment (indoor / outdoor / location)
+---
 
-Generate final ranked results with textual explanations
+## 🧠 Scene Understanding (Places365)
 
-This design preserves CLIP’s semantic strength while correcting its compositional weaknesses.
+Scene classification is powered by **Places365**, allowing the system to explicitly model where an outfit is worn.
 
-🧪 Example Query
+**Supported Scene Types:**
+- Office
+- Street
+- Park
+- Runway
+- Indoor / Outdoor
 
-Query:
+**Improves Queries Like:**
+- *“Professional business attire inside a modern office”*
+- *“Casual outfit for a city walk”*
 
-“A blue shirt with black pants sitting in a park”
+---
 
-System Reasoning:
+## 🖥️ Frontend (Optional Demo)
 
-Upper garment → Shirt → Blue
+A Streamlit-based frontend is provided for interactive testing.
 
-Lower garment → Pants → Black
-
-Environment → Park
-
-Result:
-Images containing:
-
-Blue upper clothing
-
-Black lower clothing
-
-Outdoor / park-like scenes
-
-are ranked highest by the system.
-
-🧠 Scene Understanding (Places365)
-
-Scene classification is powered by Places365, allowing the system to explicitly model where an outfit is worn, not just what is worn.
-
-Supported Scene Types
-
-Office
-
-Street
-
-Park
-
-Runway
-
-Indoor / Outdoor
-
-Improves Queries Like:
-
-“Professional business attire inside a modern office”
-
-“Casual outfit for a city walk”
-
-Scene awareness significantly improves contextual relevance in retrieval results.
-
-🖥️ Frontend (Optional Demo)
-
-An optional Streamlit-based frontend is provided for interactive testing and qualitative evaluation.
-
-Run Locally
+**Run Locally:**
+```bash
 streamlit run frontend/app.py
+```
 
-The UI Displays:
+**The UI Displays:**
+- Parsed query attributes
+- Confidence score
+- Ranked image results
+- Explanation per retrieved image
 
-Parsed query attributes
+---
 
-Confidence score
+## 📊 Scalability Considerations
 
-Ranked image results
+| Aspect | Strategy |
+| :--- | :--- |
+| **1M+ Images** | FAISS IVF index |
+| **Latency** | Approximate NN search |
+| **Memory** | External FAISS index |
+| **Models** | Frozen (no training) |
+| **Deployment** | CPU / GPU compatible |
 
-Explanation per retrieved image
+---
 
-📊 Scalability Considerations
-Aspect	Strategy
-1M+ Images	FAISS IVF index
-Latency	Approximate NN search
-Memory	External FAISS index
-Models	Frozen (no training)
-Deployment	CPU / GPU compatible
-
-The system is designed to scale efficiently without retraining models.
-
-🔬 Evaluation Queries (Assignment)
+## 🔬 Evaluation Queries (Assignment)
 
 The system was evaluated on the following compositional fashion queries:
 
-✔️ A person in a bright yellow raincoat
+✔️ **A person in a bright yellow raincoat**  
+✔️ **Professional business attire inside a modern office**  
+✔️ **Someone wearing a blue shirt sitting on a park bench**  
+✔️ **Casual weekend outfit for a city walk**  
+✔️ **A red tie and a white shirt in a formal setting**
 
-✔️ Professional business attire inside a modern office
+---
 
-✔️ Someone wearing a blue shirt sitting on a park bench
+## 🚀 Future Improvements
 
-✔️ Casual weekend outfit for a city walk
+- **Precision:** Replace color heuristics with color embeddings or fine-tuned fashion encoders.
+- **Signals:** Weather-aware retrieval, city/location embeddings, and brand detection.
+- **Scale:** Distributed FAISS and multilingual query support.
 
-✔️ A red tie and a white shirt in a formal setting
+---
 
-These queries test attribute binding, context awareness, and compositional reasoning.
+## 🏁 Final Note
 
-🚀 Future Improvements
-🎯 Precision Enhancements
+This project demonstrates how to build a **production-grade multimodal retrieval system** that understands fashion beyond surface-level similarity. It is designed to be **explainable, composable, and research-ready**.
 
-Replace color heuristics with color embeddings
-
-Fine-tuned fashion-specific encoders
-
-Attention-weighted region fusion
-
-🌍 New Signals
-
-Weather-aware retrieval
-
-City / location embeddings
-
-Brand & logo detection
-
-📈 Scale
-
-Distributed FAISS
-
-Multilingual query support
-
-User preference modeling
-
-📌 Why This Fits the Assignment
-
-✔ Focuses on ML logic, not infrastructure noise
-✔ Explicitly addresses CLIP’s compositional weaknesses
-✔ Clean separation of indexing and retrieval
-✔ Strong multimodal reasoning
-✔ Zero-shot capable
-✔ Designed for scalability
-
-🏁 Final Note
-
-This project demonstrates how to build a production-grade multimodal retrieval system that understands fashion beyond surface-level similarity.
-
-It is intentionally designed to be:
-
-Explainable
-
-Composable
-
-Extendable
-
-Research-ready
-
-Author: Yash Gunjal
+**Author:** Yash Gunjal
