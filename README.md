@@ -150,18 +150,18 @@ python -m backend.indexer.build_index \
   --batch_size 8
 
 ```
-🔎 Retrieval Pipeline (Part B)
+##🔎 Retrieval Pipeline (Part B)
 1️⃣ Query Understanding
 
-A hybrid parsing approach is used:
+The system uses a hybrid query parsing approach to convert free-form natural language queries into structured, machine-readable representations.
 
-Primary: LLM-based query parsing (Google Gemini)
+Primary: LLM-based query parsing using Google Gemini
 
-Fallback: Rule-based NLP extraction
+Fallback: Rule-based NLP extraction for robustness
 
-The system extracts structured attributes from free-form user queries.
+This step extracts explicit fashion and context attributes, enabling fine-grained compositional reasoning.
 
-Example Output
+Example Structured Output
 {
   "upper_item": "shirt",
   "upper_colors": ["blue"],
@@ -172,13 +172,15 @@ Example Output
 }
 
 
-This structured representation enables compositional reasoning, which standard CLIP retrieval struggles with.
+This structured representation is critical for handling multi-attribute queries, which standard CLIP-based retrieval struggles with.
 
 2️⃣ Retrieval Steps
 
-Encode the query using CLIP text encoder
+Once the query is structured, retrieval proceeds as follows:
 
-Perform Top-K semantic search using FAISS
+Encode the query using the CLIP text encoder
+
+Perform Top-K semantic retrieval using FAISS
 
 Apply region-aware reranking based on:
 
@@ -188,7 +190,9 @@ Lower garment color match
 
 Scene alignment (indoor / outdoor / location)
 
-Generate final ranked results with explanations
+Generate final ranked results with textual explanations
+
+This design preserves CLIP’s semantic strength while correcting its compositional weaknesses.
 
 🧪 Example Query
 
@@ -212,11 +216,12 @@ Blue upper clothing
 Black lower clothing
 
 Outdoor / park-like scenes
-are ranked highest.
+
+are ranked highest by the system.
 
 🧠 Scene Understanding (Places365)
 
-Scene classification is powered by Places365, allowing the system to explicitly model where the outfit is worn.
+Scene classification is powered by Places365, allowing the system to explicitly model where an outfit is worn, not just what is worn.
 
 Supported Scene Types
 
@@ -236,14 +241,16 @@ Improves Queries Like:
 
 “Casual outfit for a city walk”
 
+Scene awareness significantly improves contextual relevance in retrieval results.
+
 🖥️ Frontend (Optional Demo)
 
-An optional Streamlit-based UI is provided for interactive testing.
+An optional Streamlit-based frontend is provided for interactive testing and qualitative evaluation.
 
 Run Locally
 streamlit run frontend/app.py
 
-Displays:
+The UI Displays:
 
 Parsed query attributes
 
@@ -261,11 +268,11 @@ Memory	External FAISS index
 Models	Frozen (no training)
 Deployment	CPU / GPU compatible
 
-The system is designed to scale without retraining models.
+The system is designed to scale efficiently without retraining models.
 
 🔬 Evaluation Queries (Assignment)
 
-The system was evaluated on the following compositional queries:
+The system was evaluated on the following compositional fashion queries:
 
 ✔️ A person in a bright yellow raincoat
 
@@ -276,6 +283,8 @@ The system was evaluated on the following compositional queries:
 ✔️ Casual weekend outfit for a city walk
 
 ✔️ A red tie and a white shirt in a formal setting
+
+These queries test attribute binding, context awareness, and compositional reasoning.
 
 🚀 Future Improvements
 🎯 Precision Enhancements
@@ -324,3 +333,5 @@ Composable
 Extendable
 
 Research-ready
+
+Author: Yash Gunjal
