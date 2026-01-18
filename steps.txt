@@ -1,0 +1,9 @@
+cd then venv\Scripts\activate
+open two terminal 
+backernd:--  uvicorn backend.api.main:app --reload
+
+frontend--  streamlit run frontend/app.py
+
+
+rebuild index--python -m backend.indexer.build_index --image_dir data/raw --output_dir data/processed/faiss_index --batch_size 16
+
