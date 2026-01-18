@@ -143,11 +143,13 @@ For each image:
 
 ### Run Indexing
 
-```bash
+```text
 python -m backend.indexer.build_index \
   --image_dir data/raw \
   --output_dir data/processed/faiss_index \
   --batch_size 8
+
+```
 🔎 Retrieval Pipeline (Part B)
 Query Understanding
 Hybrid approach:
