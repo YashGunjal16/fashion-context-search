@@ -1,1 +1,4 @@
-seven
+go to this repo:-https://drive.usercontent.google.com/download?id=1k4dllHpu0bdx38J7H28rVVLpU-kOHmnH&export=download
+
+
+download that .pth file and put in this folder
