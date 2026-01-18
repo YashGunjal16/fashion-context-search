@@ -151,15 +151,17 @@ python -m backend.indexer.build_index \
 
 ```
 🔎 Retrieval Pipeline (Part B)
-Query Understanding
-Hybrid approach:
+1️⃣ Query Understanding
 
-Primary: LLM-based parsing (Google Gemini)
+A hybrid parsing approach is used:
 
-Fallback: Rule-based NLP
+Primary: LLM-based query parsing (Google Gemini)
 
-Outputs structured attributes:
+Fallback: Rule-based NLP extraction
 
+The system extracts structured attributes from free-form user queries.
+
+Example Output
 {
   "upper_item": "shirt",
   "upper_colors": ["blue"],
@@ -168,39 +170,55 @@ Outputs structured attributes:
   "environment": "park",
   "confidence": 0.91
 }
-Retrieval Steps
-Encode query with CLIP text encoder
 
-FAISS top-K semantic search
 
-Region-aware reranking:
+This structured representation enables compositional reasoning, which standard CLIP retrieval struggles with.
 
-Upper color match
+2️⃣ Retrieval Steps
 
-Lower color match
+Encode the query using CLIP text encoder
 
-Scene alignment
+Perform Top-K semantic search using FAISS
 
-Final ranking + explanation generation
+Apply region-aware reranking based on:
+
+Upper garment color match
+
+Lower garment color match
+
+Scene alignment (indoor / outdoor / location)
+
+Generate final ranked results with explanations
 
 🧪 Example Query
+
 Query:
 
 “A blue shirt with black pants sitting in a park”
 
 System Reasoning:
 
-Upper garment → shirt → blue
+Upper garment → Shirt → Blue
 
-Lower garment → pants → black
+Lower garment → Pants → Black
 
-Scene → park
+Environment → Park
 
 Result:
-Images with blue upper clothing, black lower clothing, outdoor scenes ranked highest.
+Images containing:
+
+Blue upper clothing
+
+Black lower clothing
+
+Outdoor / park-like scenes
+are ranked highest.
 
 🧠 Scene Understanding (Places365)
-Used to explicitly model “where”:
+
+Scene classification is powered by Places365, allowing the system to explicitly model where the outfit is worn.
+
+Supported Scene Types
 
 Office
 
@@ -212,72 +230,90 @@ Runway
 
 Indoor / Outdoor
 
-This directly improves:
+Improves Queries Like:
 
-“Formal attire inside a modern office”
+“Professional business attire inside a modern office”
 
 “Casual outfit for a city walk”
 
 🖥️ Frontend (Optional Demo)
-Streamlit-based UI for interactive testing:
 
+An optional Streamlit-based UI is provided for interactive testing.
+
+Run Locally
 streamlit run frontend/app.py
+
 Displays:
 
-Parsed query
+Parsed query attributes
 
 Confidence score
 
-Ranked images
+Ranked image results
 
-Explanation per result
+Explanation per retrieved image
 
-📊 Scalability
+📊 Scalability Considerations
 Aspect	Strategy
-1M images	FAISS IVF index
-Latency	ANN search
-Memory	External index
-Models	Frozen, no training
-Deployment	CPU/GPU compatible
+1M+ Images	FAISS IVF index
+Latency	Approximate NN search
+Memory	External FAISS index
+Models	Frozen (no training)
+Deployment	CPU / GPU compatible
+
+The system is designed to scale without retraining models.
+
 🔬 Evaluation Queries (Assignment)
+
+The system was evaluated on the following compositional queries:
+
 ✔️ A person in a bright yellow raincoat
+
 ✔️ Professional business attire inside a modern office
+
 ✔️ Someone wearing a blue shirt sitting on a park bench
+
 ✔️ Casual weekend outfit for a city walk
+
 ✔️ A red tie and a white shirt in a formal setting
 
 🚀 Future Improvements
-Precision
+🎯 Precision Enhancements
+
 Replace color heuristics with color embeddings
 
 Fine-tuned fashion-specific encoders
 
 Attention-weighted region fusion
 
-New Signals
+🌍 New Signals
+
 Weather-aware retrieval
 
 City / location embeddings
 
 Brand & logo detection
 
-Scale
+📈 Scale
+
 Distributed FAISS
 
-Multilingual queries
+Multilingual query support
 
 User preference modeling
 
-📌 Why This Fits the Assignment Perfectly
-✔ Focus on ML logic, not infra noise
-✔ Explicitly addresses CLIP compositional weaknesses
-✔ Clear indexing + retrieval separation
+📌 Why This Fits the Assignment
+
+✔ Focuses on ML logic, not infrastructure noise
+✔ Explicitly addresses CLIP’s compositional weaknesses
+✔ Clean separation of indexing and retrieval
 ✔ Strong multimodal reasoning
 ✔ Zero-shot capable
-✔ Scalable by design
+✔ Designed for scalability
 
 🏁 Final Note
-This project demonstrates how to build a real-world multimodal retrieval system that understands fashion beyond surface similarity.
+
+This project demonstrates how to build a production-grade multimodal retrieval system that understands fashion beyond surface-level similarity.
 
 It is intentionally designed to be:
 
@@ -288,5 +324,3 @@ Composable
 Extendable
 
 Research-ready
-
-Author: Yash Gunjal
